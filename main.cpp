@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-
+#include "InterfazCLI.h"
 #include "CSVReader.h"
 #include "Indexador.h"
 #include "Motor_de_busqueda.h"
@@ -254,6 +254,13 @@ int main() {
             default:
                 cout << "Opcion invalida.\n";
         }
+    }
+    try {
+        InterfazCLI cli;
+        cli.iniciar();
+    } catch (const std::exception& e) {
+        std::cerr << "Error en la ejecucion: " << e.what() << std::endl;
+        return 1;
     }
 
     return 0;

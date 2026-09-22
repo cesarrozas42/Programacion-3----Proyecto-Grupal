@@ -14,7 +14,8 @@ add_executable(proyecto_buscador_peliculas
         Relevancia.cpp
         Tag.cpp
         Usuario.cpp
-        Trie.cpp)
+        Trie.cpp
+        InterfazCLI.cpp)
 
 # Ejecutable separado solo para los tests
 add_executable(tests_proyecto
