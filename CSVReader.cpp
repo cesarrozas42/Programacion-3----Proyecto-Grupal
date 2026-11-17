@@ -1,4 +1,5 @@
 #include "CSVReader.h"
+#include "PeliculaFactory.h"
 
 #include <fstream>
 #include <iostream>
@@ -195,56 +196,16 @@ vector<Pelicula> CSVReader::leerArchivo(string nombreArchivo) {
 
         vector<string> campos = separarCSV(registro);
 
-        if (campos.size() != 8) {
+        // Patron Factory: la creacion/validacion de la Pelicula vive en PeliculaFactory.
+        auto pelicula = PeliculaFactory::crear(
+                static_cast<int>(peliculas.size()), campos);
+
+        if (!pelicula) {
             descartadas++;
             continue;
         }
 
-        string anioTexto = limpiarTexto(campos[0]);
-
-        if (anioTexto.empty()) {
-            descartadas++;
-            continue;
-        }
-
-        int anio;
-
-        try {
-            anio = stoi(anioTexto);
-        }
-        catch (...) {
-            descartadas++;
-            continue;
-        }
-
-        string titulo = limpiarTexto(campos[1]);
-        string origen = limpiarTexto(campos[2]);
-        string director = limpiarTexto(campos[3]);
-        string casting = limpiarTexto(campos[4]);
-        string genero = limpiarTexto(campos[5]);
-        string wikiPage = limpiarTexto(campos[6]);
-        string sinopsis = limpiarTexto(campos[7]);
-
-        Pelicula pelicula(
-                anio,
-                titulo,
-                origen,
-                director,
-                casting,
-                genero,
-                wikiPage,
-                sinopsis
-        );
-
-        pelicula.setTituloNormalizado(
-                normalizarTexto(titulo)
-        );
-
-        pelicula.setSinopsisNormalizada(
-                normalizarTexto(sinopsis)
-        );
-
-        peliculas.push_back(pelicula);
+        peliculas.push_back(*pelicula);
     }
     cout << "Peliculas cargadas: " << peliculas.size() << endl;
     cout << "Filas descartadas: " << descartadas << endl;

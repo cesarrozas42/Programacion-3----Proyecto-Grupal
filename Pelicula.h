@@ -8,6 +8,7 @@ using namespace std;
 
 class Pelicula {
 private:
+    int id = -1;   // <-- NUEVO: posicion en el catalogo
     int anio;
     string titulo;
     string origen;
@@ -35,6 +36,9 @@ public:
              string sinopsis);
 
     void generarTags();
+
+    int getId() const { return id; }            // <-- NUEVO
+    void setId(int nuevoId) { id = nuevoId; }   // <-- NUEVO
 
     int getAnio() const;
     string getTitulo() const;

@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include "InterfazCLI.h"
+#include "CatalogoPeliculas.h"
 #include "CSVReader.h"
 #include "Indexador.h"
 #include "Motor_de_busqueda.h"
@@ -191,19 +192,16 @@ int main() {
     system("chcp 65001 > nul");
 #endif
 
-    // 1. Cargar CSV (una sola vez)
-    CSVReader lector;
-    vector<Pelicula> peliculas =
-            lector.leerArchivo("wiki_movie_plots_deduped.csv");
+    // 1. y 2. Cargar CSV y construir indice: ahora lo hace el Singleton (una sola vez)
+    CatalogoPeliculas& catalogo = CatalogoPeliculas::getInstancia();
 
-    if (peliculas.empty()) {
+    if (!catalogo.cargar("wiki_movie_plots_deduped.csv")) {
         cout << "No se pudieron cargar peliculas. Verifica el CSV.\n";
         return 1;
     }
 
-    // 2. Construir indice (una sola vez)
-    Indexador indexador;
-    indexador.construirIndice(peliculas);
+    const vector<Pelicula>& peliculas = catalogo.getPeliculas();
+    const Indexador& indexador = catalogo.getIndexador();
 
     // 3. Crear objetos que dependen del indice
     Relevancia relevancia(peliculas, indexador);
@@ -255,13 +253,5 @@ int main() {
                 cout << "Opcion invalida.\n";
         }
     }
-    try {
-        InterfazCLI cli;
-        cli.iniciar();
-    } catch (const std::exception& e) {
-        std::cerr << "Error en la ejecucion: " << e.what() << std::endl;
-        return 1;
-    }
-
     return 0;
 }

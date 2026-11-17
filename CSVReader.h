@@ -11,12 +11,14 @@ class CSVReader {
 private:
 
     vector<string> separarCSV(string linea);
-    string limpiarTexto(string texto);
-    string normalizarTexto(string texto);
     string leerRegistroCSV(ifstream &archivo);
 
 public:
     vector<Pelicula> leerArchivo(string nombreArchivo);
+
+    // <-- CAMBIO: ahora public static (los usa PeliculaFactory)
+    static string limpiarTexto(string texto);
+    static string normalizarTexto(string texto);
 };
 
 #endif
