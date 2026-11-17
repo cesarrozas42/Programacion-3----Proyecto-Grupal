@@ -33,6 +33,7 @@ bool Usuario::agregarLike(int idPelicula) {
         return false;
     }
     likes.push_back(idPelicula);
+    notificar(TipoEventoUsuario::LIKE_AGREGADO, idPelicula);
     return true;
 }
 
@@ -41,6 +42,7 @@ bool Usuario::agregarVerMasTarde(int idPelicula) {
         return false;
     }
     verMasTarde.push_back(idPelicula);
+    notificar(TipoEventoUsuario::VER_MAS_TARDE_AGREGADO, idPelicula);
     return true;
 }
 
@@ -50,6 +52,7 @@ bool Usuario::quitarLike(int idPelicula) {
         return false;
     }
     likes.erase(it);
+    notificar(TipoEventoUsuario::LIKE_ELIMINADO, idPelicula);
     return true;
 }
 
@@ -59,7 +62,28 @@ bool Usuario::quitarVerMasTarde(int idPelicula) {
         return false;
     }
     verMasTarde.erase(it);
+    notificar(TipoEventoUsuario::VER_MAS_TARDE_ELIMINADO, idPelicula);
     return true;
+}
+
+// --- Observer ---
+void Usuario::agregarObservador(UsuarioObserver* observador) {
+    if (observador != nullptr &&
+        find(observadores.begin(), observadores.end(), observador) == observadores.end()) {
+        observadores.push_back(observador);
+    }
+}
+
+void Usuario::quitarObservador(UsuarioObserver* observador) {
+    observadores.erase(remove(observadores.begin(), observadores.end(), observador),
+                       observadores.end());
+}
+
+void Usuario::notificar(TipoEventoUsuario evento, int idPelicula) const {
+    const vector<UsuarioObserver*> copia = observadores;  // por si alguien se desuscribe al recibir el aviso
+    for (UsuarioObserver* observador : copia) {
+        observador->actualizar(*this, evento, idPelicula);
+    }
 }
 // Usuario.cpp - agregar
 #include <fstream>

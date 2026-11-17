@@ -7,6 +7,7 @@
 #include "Relevancia.h"
 #include "Recomendador.h"
 #include "Usuario.h"
+#include "Motor_de_busqueda.h"
 
 using namespace std;
 
@@ -157,6 +158,16 @@ void probarUsuarioSinDuplicados() {
     cout << "  -> PASADO: sin duplicados, y quitarLike funciona.\n";
 }
 
+void probarBusquedaPorTagSinCruzarCampos(const Indexador& indexador) {
+    MotorDeBusqueda motor(indexador);
+    auto porDirector = motor.buscarPorDirector("Wachowski");
+    auto porActor = motor.buscarPorActor("Wachowski");
+
+    assert(porDirector.size() == 2);
+    assert(porActor.empty());
+    cout << "[TEST] tags por campo: PASADO (director no se mezcla con casting).\n";
+}
+
 int main() {
     cout << "PRUEBAS DE RELEVANCIA Y RECOMENDADOR \n\n";
 
@@ -171,9 +182,8 @@ int main() {
     probarPaginacion(peliculas, indexador);
     probarRecomendador(peliculas, indexador);
     probarUsuarioSinDuplicados();
+    probarBusquedaPorTagSinCruzarCampos(indexador);
 
     cout << "\n TODAS LAS PRUEBAS PASARON \n";
     return 0;
 }
-
-

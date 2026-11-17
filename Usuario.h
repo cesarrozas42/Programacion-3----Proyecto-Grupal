@@ -4,8 +4,12 @@
 #include <string>
 #include <vector>
 
+#include "UsuarioObserver.h"
+
 using namespace std;
 
+// OBSERVER (Parte 2): el Usuario es el sujeto. Cada vez que cambia un Like
+// o la lista Ver mas tarde, avisa a sus observadores (UsuarioObserver).
 class Usuario {
 private:
     int id;
@@ -13,6 +17,9 @@ private:
 
     vector<int> likes;
     vector<int> verMasTarde;
+
+    vector<UsuarioObserver*> observadores;
+    void notificar(TipoEventoUsuario evento, int idPelicula) const;
 
 public:
     Usuario();
@@ -35,6 +42,9 @@ public:
 
     void guardar(const string& archivo) const;
     void cargar(const string& archivo);
+
+    void agregarObservador(UsuarioObserver* observador);
+    void quitarObservador(UsuarioObserver* observador);
 };
 
 #endif
