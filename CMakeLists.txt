@@ -30,3 +30,19 @@ add_executable(tests_proyecto
         Tag.cpp
         Usuario.cpp
         Trie.cpp)
+
+# Arbol (Integrante 1 - Parte 2): pruebas unitarias y demo para la exposicion
+add_executable(tests_arbol
+        test_arbol.cpp
+        Indexador.cpp
+        Pelicula.cpp
+        Tag.cpp
+        Trie.cpp)
+
+add_executable(demo_arbol
+        demo_arbol.cpp
+        CSVReader.cpp
+        Indexador.cpp
+        Pelicula.cpp
+        Tag.cpp
+        Trie.cpp)
