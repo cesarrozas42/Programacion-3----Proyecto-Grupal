@@ -67,5 +67,15 @@ add_test(NAME pruebas_de_patrones COMMAND test_patrones)
 # ------------------------------------------------------------------
 # Falta: Integrante 2 (carga paralela del CSV). Sumar sus .cpp a
 # FUENTES_NUCLEO; los hilos ya estan enlazados arriba y el catalogo
-# tiene CatalogoPeliculas::cargarDesdeVector() para recibir sus peliculas.
+# --- AGREGAMOS EL BENCHMARK AQUI ---
+add_executable(benchmark
+        benchmark.cpp
+        CSVReader.cpp
+        Indexador.cpp
+        Pelicula.cpp
+        Tag.cpp
+        Trie.cpp
+        PeliculaFactory.cpp
+        ParallelEngine.cpp)
+target_link_libraries(benchmark Threads::Threads)
 # ------------------------------------------------------------------
