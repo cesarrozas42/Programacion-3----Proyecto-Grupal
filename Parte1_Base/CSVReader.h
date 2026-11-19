@@ -16,7 +16,6 @@ private:
 public:
     vector<Pelicula> leerArchivo(string nombreArchivo);
 
-    // <-- CAMBIO: ahora public static (los usa PeliculaFactory)
     static string limpiarTexto(string texto);
     static string normalizarTexto(string texto);
 };

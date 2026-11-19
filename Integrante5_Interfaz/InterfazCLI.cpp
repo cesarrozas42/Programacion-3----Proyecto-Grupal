@@ -13,12 +13,10 @@ using namespace std;
 
 namespace {
 
-constexpr size_t TAMANO_PAGINA = 5;   // "las cinco mas importantes" (requisito de la parte 1)
-constexpr size_t ANCHO = 60;          // mismo ancho de las lineas de la parte 1
+constexpr size_t TAMANO_PAGINA = 5;
+constexpr size_t ANCHO = 60;
 constexpr size_t MAX_SUGERENCIAS = 8;
 
-// ---------- Colores ANSI (la consola de CLion los muestra) ----------
-// Para desactivarlos: definir la variable de entorno NO_COLOR.
 bool coloresActivos() {
     static const bool activos = getenv("NO_COLOR") == nullptr;
     return activos;
@@ -50,7 +48,6 @@ string conMiles(size_t numero) {
     return texto;
 }
 
-// ---------- Texto UTF-8 (los titulos pueden traer tildes) ----------
 bool esContinuacionUtf8(unsigned char c) { return (c & 0xC0) == 0x80; }
 
 size_t largoVisible(const string& texto) {
@@ -60,7 +57,6 @@ size_t largoVisible(const string& texto) {
     return largo;
 }
 
-// Recorta a "ancho" caracteres (con "...") y rellena con espacios.
 string ajustar(const string& texto, size_t ancho) {
     string salida;
     if (largoVisible(texto) <= ancho) {
@@ -83,7 +79,6 @@ string centrar(const string& texto, size_t ancho) {
     return string((ancho - largo) / 2, ' ') + texto;
 }
 
-// Parte un texto largo en lineas sin cortar palabras.
 vector<string> envolver(const string& texto, size_t ancho) {
     vector<string> lineas;
     istringstream entrada(texto);
@@ -104,7 +99,6 @@ string minusculas(string texto) {
     return texto;
 }
 
-// Misma normalizacion que el Trie: minusculas y solo letras/numeros.
 vector<string> palabrasDe(const string& texto) {
     vector<string> palabras;
     string palabra;
@@ -131,11 +125,7 @@ string lineaDoble() { return string(ANCHO, '='); }
 string lineaSimple() { return string(ANCHO, '-'); }
 string etiquetaNueva() { return GRIS() + "  (nuevo)" + RESET(); }
 
-} // namespace
-
-// =====================================================================
-// Construccion y entrada
-// =====================================================================
+}
 
 InterfazCLI::InterfazCLI(const vector<Pelicula>& catalogo,
                          const Indexador& indexador,
@@ -147,15 +137,13 @@ InterfazCLI::InterfazCLI(const vector<Pelicula>& catalogo,
     : catalogo(catalogo), indexador(indexador), relevancia(relevancia),
       recomendador(recomendador), usuario(usuario),
       archivoEstado(std::move(archivoEstado)), tiemposCarga(tiemposCarga) {
-    usuario.agregarObservador(this);  // OBSERVER: el menu se suscribe al Usuario
+    usuario.agregarObservador(this);
 }
 
 InterfazCLI::~InterfazCLI() {
     usuario.quitarObservador(this);
 }
 
-// OBSERVER: aviso del Usuario. El menu muestra el cambio y guarda el estado
-// (antes, en la parte 1, el menu tenia que acordarse de guardar tras cada opcion).
 void InterfazCLI::actualizar(const Usuario&, TipoEventoUsuario evento, int idPelicula) {
     string mensaje;
     switch (evento) {
@@ -170,10 +158,6 @@ void InterfazCLI::actualizar(const Usuario&, TipoEventoUsuario evento, int idPel
              << "\"; estado guardado en " << archivoEstado << "." << RESET() << "\n";
     guardarEstado();
 }
-
-// =====================================================================
-// STRATEGY: como se busca (integrante 4)
-// =====================================================================
 
 string InterfazCLI::nombreModo() const {
     switch (modo) {
@@ -203,10 +187,10 @@ string InterfazCLI::leerLinea(const string& mensaje) {
     cout << mensaje << flush;
     string entrada;
     if (!getline(cin, entrada)) {
-        entradaTerminada = true;  // se cerro la entrada: salir sin quedarse en bucle
+        entradaTerminada = true;
         return "";
     }
-    if (entrada.rfind("\xEF\xBB\xBF", 0) == 0) entrada.erase(0, 3);  // marca BOM de algunas consolas
+    if (entrada.rfind("\xEF\xBB\xBF", 0) == 0) entrada.erase(0, 3);
     return recortarEspacios(entrada);
 }
 
@@ -224,10 +208,6 @@ void InterfazCLI::pausar() {
     if (!entradaTerminada) leerLinea("\nPresiona ENTER para continuar...");
 }
 
-// =====================================================================
-// Utilidades de pantalla
-// =====================================================================
-
 bool InterfazCLI::idValido(int idPelicula) const {
     return idPelicula >= 0 && idPelicula < static_cast<int>(catalogo.size());
 }
@@ -236,7 +216,6 @@ void InterfazCLI::guardarEstado() const {
     usuario.guardar(archivoEstado);
 }
 
-// [L] = tiene Like, [V] = esta en Ver mas tarde
 string InterfazCLI::marcas(int idPelicula) const {
     string texto;
     if (usuario.tieneLike(idPelicula)) texto += " " + ROJO() + "[L]" + RESET();
@@ -256,7 +235,6 @@ void InterfazCLI::mostrarEncabezado() const {
          << CIAN() << lineaDoble() << RESET() << "\n";
 }
 
-// "  1. Titulo (anio) | genero [L] [V]"  (mismo formato de la parte 1)
 void InterfazCLI::mostrarResumen(int idPelicula, int numero, const string& extra) const {
     if (!idValido(idPelicula)) return;
     const Pelicula& pelicula = catalogo[idPelicula];
@@ -290,10 +268,6 @@ void InterfazCLI::mostrarInicio() const {
     mostrarColeccion("RECOMENDADAS PARA TI", recomendador.recomendar(usuario, 5));
 }
 
-// =====================================================================
-// Detalle de una pelicula (sinopsis, Like y Ver mas tarde)
-// =====================================================================
-
 void InterfazCLI::verDetalle(int idPelicula) {
     if (!idValido(idPelicula)) return;
     while (!entradaTerminada) {
@@ -306,7 +280,6 @@ void InterfazCLI::verDetalle(int idPelicula) {
              << CIAN() << lineaDoble() << RESET() << "\n"
              << GRIS() << "Origen:   " << RESET() << p.getOrigen() << "\n"
              << GRIS() << "Director: " << RESET() << p.getDirector() << "\n";
-        // El reparto puede ser largo: se parte en lineas
         const vector<string> reparto = envolver(p.getCasting().empty() ? "-" : p.getCasting(), ANCHO - 10);
         for (size_t i = 0; i < reparto.size(); ++i)
             cout << GRIS() << (i == 0 ? "Reparto:  " : "          ") << RESET() << reparto[i] << "\n";
@@ -322,7 +295,6 @@ void InterfazCLI::verDetalle(int idPelicula) {
 
         const string opcion = leerLinea("Elige una opcion: ");
         if (entradaTerminada || opcion == "0") return;
-        // El aviso y el guardado los hace actualizar() (Observer)
         if (opcion == "1") {
             if (tieneLike) usuario.quitarLike(idPelicula);
             else usuario.agregarLike(idPelicula);
@@ -334,10 +306,6 @@ void InterfazCLI::verDetalle(int idPelicula) {
         }
     }
 }
-
-// =====================================================================
-// Resultados de 5 en 5 (parte 1) + tiempo de busqueda (parte 2)
-// =====================================================================
 
 void InterfazCLI::navegarResultados(const string& titulo, vector<int> ids,
                                     const vector<double>& puntajes, double ms,
@@ -398,16 +366,10 @@ void InterfazCLI::navegarResultados(const string& titulo, vector<int> ids,
             continue;
         }
         verDetalle(validos[inicio + seleccion - 1]);
-        if (recargar) ids = recargar();  // la lista pudo cambiar en el detalle
+        if (recargar) ids = recargar();
     }
 }
 
-// =====================================================================
-// Busquedas
-// =====================================================================
-
-// Parte 2: si la ultima palabra esta incompleta, el arbol sugiere como
-// completarla (de la palabra que aparece en mas peliculas a la que menos).
 string InterfazCLI::pedirConAutocompletado() {
     cout << GRIS() << "\nTip: escribe el inicio de una palabra y el arbol te sugiere como completarla." << RESET();
     const string texto = leerLinea("\nPalabra, frase o sub-palabra: ");
@@ -453,13 +415,11 @@ void InterfazCLI::buscarPorTexto() {
     vector<double> puntajes;
     const auto inicio = Reloj::now();
     if (modo == ModoBusqueda::ARBOL) {
-        // Arbol + Relevancia (titulo pesa mas que sinopsis, bonus por frase completa)
         for (const ResultadoBusqueda& r : relevancia.buscar(consulta)) {
             ids.push_back(r.idPelicula);
             puntajes.push_back(r.score);
         }
     } else {
-        // Secuencial o Paralela: la estrategia revisa el texto de cada pelicula
         const EstrategiaConcretaBusqueda estrategia(catalogo, indexador, TipoBusqueda::SUBCADENA, modo);
         ids = estrategia.buscar(consulta);
     }
@@ -483,7 +443,6 @@ void InterfazCLI::buscarPorTag(const string& tipo) {
     if (tipo == "director") tipoBusqueda = TipoBusqueda::DIRECTOR;
     else if (tipo == "genero") tipoBusqueda = TipoBusqueda::GENERO;
 
-    // STRATEGY: la misma busqueda con el modo elegido (Arbol / Secuencial / Paralela)
     const EstrategiaConcretaBusqueda estrategia(catalogo, indexador, tipoBusqueda, modo);
     const auto inicio = Reloj::now();
     const vector<int> ids = estrategia.buscar(valor);
@@ -528,10 +487,6 @@ void InterfazCLI::mostrarLikes() {
                       [this]() { return usuario.getLikes(); });
 }
 
-// =====================================================================
-// Tiempos medidos (parte 2)
-// =====================================================================
-
 void InterfazCLI::registrar(const string& tipo, const string& consulta, size_t resultados, double ms) {
     historial.push_back({tipo, consulta, resultados, ms});
 }
@@ -553,10 +508,6 @@ void InterfazCLI::mostrarTiempos() const {
              << ajustar(conMiles(r.resultados), 9) << VERDE() << formatoTiempo(r.ms) << RESET() << "\n";
     }
 }
-
-// =====================================================================
-// Menu principal (mismas opciones de la parte 1 + las nuevas)
-// =====================================================================
 
 void InterfazCLI::ejecutar() {
     mostrarInicio();

@@ -42,7 +42,6 @@ void probarSingleton() {
     CatalogoPeliculas& b = CatalogoPeliculas::getInstancia();
     assert(&a == &b);
 
-    // La misma instancia desde varios hilos
     vector<CatalogoPeliculas*> vistas(8, nullptr);
     vector<thread> hilos;
     for (int i = 0; i < 8; ++i) {
@@ -55,7 +54,7 @@ void probarSingleton() {
 
     vector<Pelicula> v;
     for (const string t : {"The Matrix", "Ghost Ship", "Forrest Gump"}) {
-        auto p = PeliculaFactory::crear(99, filaValida(t));   // id "malo" a proposito
+        auto p = PeliculaFactory::crear(99, filaValida(t));
         assert(p.has_value());
         v.push_back(*p);
     }
@@ -64,7 +63,6 @@ void probarSingleton() {
     assert(a.estaCargado());
     assert(a.tamano() == 3);
 
-    // El catalogo renumera: id == posicion
     for (int i = 0; i < 3; ++i) {
         assert(a.obtener(i) != nullptr);
         assert(a.obtener(i)->getId() == i);
@@ -74,7 +72,6 @@ void probarSingleton() {
 
     assert(!a.getIndexador().buscarContenido("matrix").empty());
 
-    // Una segunda carga se ignora
     assert(a.cargarDesdeVector(vector<Pelicula>{}));
     assert(a.tamano() == 3);
 

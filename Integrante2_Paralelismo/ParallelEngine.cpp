@@ -10,8 +10,6 @@
 
 using namespace std;
 
-
-// FUNCIÓN AUXILIAR: Separar CSV respetando comillas
 static vector<string> separarCSVParalelo(const string& linea) {
     vector<string> campos;
     string campo;
@@ -37,9 +35,6 @@ static vector<string> separarCSVParalelo(const string& linea) {
     return campos;
 }
 
-// ============================================================
-// LECTURA PARALELA DEL CSV
-// ============================================================
 vector<Pelicula> ParallelEngine::cargarCSVParalelo(const string& rutaCSV, int numHilos) {
     ifstream archivo(rutaCSV, ios::binary);
     if (!archivo.is_open()) {
@@ -139,7 +134,6 @@ vector<Pelicula> ParallelEngine::cargarCSVParalelo(const string& rutaCSV, int nu
     return resultadoFinal;
 }
 
-// CONSTRUCCIÓN PARALELA DEL ÍNDICE
 std::unique_ptr<Indexador> ParallelEngine::construirIndiceParalelo(const vector<Pelicula>& peliculas, [[maybe_unused]] int numHilos) {
     auto idx = std::make_unique<Indexador>();
     idx->construirIndice(peliculas);

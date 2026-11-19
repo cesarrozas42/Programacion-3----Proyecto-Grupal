@@ -8,8 +8,6 @@
 
 using namespace std;
 
-// OBSERVER (Parte 2): el Usuario es el sujeto. Cada vez que cambia un Like
-// o la lista Ver mas tarde, avisa a sus observadores (UsuarioObserver).
 class Usuario {
 private:
     int id;
@@ -38,7 +36,6 @@ public:
 
     vector<int> getLikes() const;
     vector<int> getVerMasTarde() const;
-
 
     void guardar(const string& archivo) const;
     void cargar(const string& archivo);

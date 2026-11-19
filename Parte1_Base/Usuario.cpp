@@ -66,7 +66,6 @@ bool Usuario::quitarVerMasTarde(int idPelicula) {
     return true;
 }
 
-// --- Observer ---
 void Usuario::agregarObservador(UsuarioObserver* observador) {
     if (observador != nullptr &&
         find(observadores.begin(), observadores.end(), observador) == observadores.end()) {
@@ -80,12 +79,11 @@ void Usuario::quitarObservador(UsuarioObserver* observador) {
 }
 
 void Usuario::notificar(TipoEventoUsuario evento, int idPelicula) const {
-    const vector<UsuarioObserver*> copia = observadores;  // por si alguien se desuscribe al recibir el aviso
+    const vector<UsuarioObserver*> copia = observadores;
     for (UsuarioObserver* observador : copia) {
         observador->actualizar(*this, evento, idPelicula);
     }
 }
-// Usuario.cpp - agregar
 #include <fstream>
 
 void Usuario::guardar(const string& archivo) const {

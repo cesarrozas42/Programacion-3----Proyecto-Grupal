@@ -1,5 +1,3 @@
-// Demo del arbol para la exposicion (Integrante 1 - Parte 2).
-// Uso: demo_arbol [ruta_al_csv]   (por defecto wiki_movie_plots_deduped.csv)
 #include <chrono>
 #include <cstdio>
 #include <iostream>
@@ -23,7 +21,6 @@ void titulo(const string& t) {
     cout << "\n=== " << t << " ===\n";
 }
 
-// Lo que hacia el motor de la parte 1: recorrer todo el catalogo con find().
 vector<int> busquedaLineal(const vector<Pelicula>& peliculas, const string& consulta) {
     vector<int> ids;
     for (int id = 0; id < static_cast<int>(peliculas.size()); ++id) {
@@ -48,7 +45,7 @@ void demoPequena() {
     cout << "buscarSubcadena(\"asc\") -> " << t.buscarSubcadena("asc").size() << " pelicula (casco)\n";
 }
 
-} // namespace
+}
 
 int main(int argc, char** argv) {
 #ifdef _WIN32
@@ -90,8 +87,6 @@ int main(int argc, char** argv) {
         for (int i = 0; i < repeticiones; ++i) arbol = indexador.buscarContenido(q);
         double msArbol = msDesde(inicio) / repeticiones;
 
-        // La busqueda lineal tambien encuentra frases que cruzan palabras;
-        // para una sola palabra ambos deben coincidir.
         printf("%-10s %10zu %14.3f %14.3f %8.0fx %s\n", q.c_str(), arbol.size(), msLineal, msArbol,
                msLineal / max(msArbol, 0.001), lineal == arbol ? "" : "(difiere!)");
     }

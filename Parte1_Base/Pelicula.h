@@ -8,7 +8,7 @@ using namespace std;
 
 class Pelicula {
 private:
-    int id = -1;   // <-- NUEVO: posicion en el catalogo
+    int id = -1;
     int anio;
     string titulo;
     string origen;
@@ -37,15 +37,15 @@ public:
 
     void generarTags();
 
-    int getId() const { return id; }            // <-- NUEVO
-    void setId(int nuevoId) { id = nuevoId; }   // <-- NUEVO
+    int getId() const { return id; }
+    void setId(int nuevoId) { id = nuevoId; }
 
     int getAnio() const;
     string getTitulo() const;
     string getOrigen() const;
     string getDirector() const;
     string getCasting() const;
-    string getCast() const; // <-- Agregado para compatibilidad
+    string getCast() const;
     string getGenero() const;
     string getWikiPage() const;
     string getSinopsis() const;

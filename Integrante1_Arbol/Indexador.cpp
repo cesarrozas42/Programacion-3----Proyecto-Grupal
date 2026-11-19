@@ -43,7 +43,6 @@ void Indexador::construirIndice(const vector<Pelicula>& peliculas) {
         indiceContenido.insertar(pelicula.getTituloNormalizado(), id);
         indiceContenido.insertar(pelicula.getSinopsisNormalizada(), id);
 
-        // Pelicula::generarTags ya arma los tags director, casting, genero y origen.
         for (const Tag& tag : pelicula.getTags()) {
             indicesTags[tipoCanonico(tag.getTipo())].insertar(tag.getValor(), id);
         }
@@ -60,7 +59,6 @@ vector<int> Indexador::buscarTag(const string& tipo, const string& valor) const 
         return {};
     }
 
-    // Union de los resultados de cada elemento separado por comas.
     vector<int> resultado;
     for (const string& elemento : separarValores(valor)) {
         vector<int> ids = indice->buscarSubcadena(elemento);

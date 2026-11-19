@@ -10,12 +10,9 @@
 
 using namespace std;
 
-// Construye un catalogo pequeño y controlado para poder predecir
-// exactamente que deberia devolver cada busqueda/recomendacion.
 vector<Pelicula> construirCatalogoDePrueba() {
     vector<Pelicula> peliculas;
 
-    // id 0
     Pelicula p0(1999, "The Matrix", "USA", "Wachowski",
                 "Keanu Reeves", "accion", "wiki/matrix",
                 "A hacker discovers the ghost ship of reality itself");
@@ -23,7 +20,6 @@ vector<Pelicula> construirCatalogoDePrueba() {
     p0.setSinopsisNormalizada("a hacker discovers the ghost ship of reality itself");
     peliculas.push_back(p0);
 
-    // id 1
     Pelicula p1(2003, "The Matrix Reloaded", "USA", "Wachowski",
                 "Keanu Reeves", "accion", "wiki/matrix2",
                 "The war against the machines continues");
@@ -31,7 +27,6 @@ vector<Pelicula> construirCatalogoDePrueba() {
     p1.setSinopsisNormalizada("the war against the machines continues");
     peliculas.push_back(p1);
 
-    // id 2
     Pelicula p2(2010, "Ghost Ship", "USA", "Steve Beck",
                 "Julianna Margulies", "terror", "wiki/ghostship",
                 "A salvage crew finds an abandoned ocean liner");
@@ -39,7 +34,6 @@ vector<Pelicula> construirCatalogoDePrueba() {
     p2.setSinopsisNormalizada("a salvage crew finds an abandoned ocean liner");
     peliculas.push_back(p2);
 
-    // id 3 (no deberia matchear "matrix" ni "ghost")
     Pelicula p3(1994, "Forrest Gump", "USA", "Robert Zemeckis",
                 "Tom Hanks", "drama", "wiki/forrestgump",
                 "A slow witted man recounts his extraordinary life");
@@ -50,7 +44,6 @@ vector<Pelicula> construirCatalogoDePrueba() {
     return peliculas;
 }
 
-//  Se recibe por referencia para evitar el retorno por valor de un objeto no copiable (Trie)
 void construirIndiceDePrueba(const vector<Pelicula>& peliculas, Indexador& indexador) {
     indexador.construirIndice(peliculas);
 }
@@ -64,8 +57,6 @@ void probarRelevanciaBusquedaSimple(const vector<Pelicula>& peliculas,
     cout << "[TEST] buscar('matrix'): " << resultados.size()
          << " resultados.\n";
 
-    // id 0 y 1 tienen "matrix" en el titulo, deberian aparecer
-    // primero y con score alto (10 c/u).
     assert(resultados.size() == 2);
     assert(resultados[0].score == 10.0);
     assert(resultados[1].score == 10.0);
@@ -81,10 +72,6 @@ void probarRelevanciaFraseCompleta(const vector<Pelicula>& peliculas,
     cout << "[TEST] buscar('ghost ship'): " << resultados.size()
          << " resultados.\n";
 
-    // id 2 ("Ghost Ship") deberia salir primero: matchea ambas
-    // palabras en el titulo (2x10) + bonus de frase completa en
-    // titulo (+50) = 70.
-    // id 0 tiene "ghost" y "ship" solo en la sinopsis (2x1 = 2).
     assert(!resultados.empty());
     assert(resultados[0].idPelicula == 2);
     assert(resultados[0].score == 70.0);
@@ -107,7 +94,7 @@ void probarPaginacion(const vector<Pelicula>& peliculas,
 
     assert(pagina1.size() == 1);
     assert(pagina2.size() == 1);
-    assert(pagina3.empty()); // ya no hay mas resultados
+    assert(pagina3.empty());
     cout << "  -> PASADO: pagina vacia cuando ya no hay mas resultados.\n";
 }
 
@@ -116,16 +103,13 @@ void probarRecomendador(const vector<Pelicula>& peliculas,
     Recomendador recomendador(peliculas, indexador);
 
     Usuario usuario(1, "Edi");
-    usuario.agregarLike(0); // le gusto "The Matrix" (Wachowski, Keanu Reeves)
+    usuario.agregarLike(0);
 
     auto recomendadas = recomendador.recomendar(usuario, 5);
 
     cout << "[TEST] recomendar() tras like a 'The Matrix': "
          << recomendadas.size() << " recomendaciones.\n";
 
-    // id 1 comparte director (Wachowski), actor (Keanu Reeves) y
-    // genero (accion) con id 0, deberia ser la mas recomendada.
-    // id 0 nunca deberia aparecer (ya esta likeada).
     assert(!recomendadas.empty());
     assert(recomendadas[0] == 1);
     for (int id : recomendadas) {
@@ -162,7 +146,6 @@ int main() {
 
     vector<Pelicula> peliculas = construirCatalogoDePrueba();
 
-    // CORREGIDO: Se instancia localmente el objeto y se pasa para llenarse
     Indexador indexador;
     construirIndiceDePrueba(peliculas, indexador);
 
@@ -175,5 +158,3 @@ int main() {
     cout << "\n TODAS LAS PRUEBAS PASARON \n";
     return 0;
 }
-
-

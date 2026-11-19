@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 vector<string> CSVReader::separarCSV(string linea) {
 
     vector<string> campos;
@@ -47,7 +46,6 @@ vector<string> CSVReader::separarCSV(string linea) {
     return campos;
 }
 
-
 string CSVReader::limpiarTexto(string texto) {
 
     size_t inicio = 0;
@@ -80,7 +78,6 @@ string reemplazarTodos(string texto, string buscar, string reemplazo) {
 string CSVReader::normalizarTexto(string texto) {
     texto = limpiarTexto(texto);
 
-    // Vocales con tilde
     texto = reemplazarTodos(texto, "á", "a");
     texto = reemplazarTodos(texto, "é", "e");
     texto = reemplazarTodos(texto, "í", "i");
@@ -93,11 +90,9 @@ string CSVReader::normalizarTexto(string texto) {
     texto = reemplazarTodos(texto, "Ó", "O");
     texto = reemplazarTodos(texto, "Ú", "U");
 
-    // Ñ
     texto = reemplazarTodos(texto, "ñ", "n");
     texto = reemplazarTodos(texto, "Ñ", "N");
 
-    // Caracteres frecuentes en nombres extranjeros
     texto = reemplazarTodos(texto, "ç", "c");
     texto = reemplazarTodos(texto, "Ç", "C");
 
@@ -116,7 +111,6 @@ string CSVReader::normalizarTexto(string texto) {
     texto = reemplazarTodos(texto, "ı", "i");
     texto = reemplazarTodos(texto, "İ", "I");
 
-    // Pasar a minúsculas y eliminar caracteres especiales
     string resultado;
 
     for (char c : texto) {
@@ -142,8 +136,6 @@ string CSVReader::leerRegistroCSV(ifstream &archivo) {
         registro += linea;
         for (size_t i = 0; i < linea.size(); i++){
             if (linea[i] == '"'){
-                // Si encontramos dos comillas seguidas,
-                // representan una comilla dentro del texto.
                 if (i + 1 < linea.size() && linea[i + 1] == '"') {
                     i++;
                 }
@@ -152,12 +144,9 @@ string CSVReader::leerRegistroCSV(ifstream &archivo) {
                 }
             }
         }
-        // Si ya no estamos dentro de comillas,
-        // significa que terminó el registro.
         if (!dentroComillas) {
             return registro;
         }
-        // El registro continúa en la siguiente línea
         registro  += "\n";
     }
     return registro;
@@ -178,7 +167,6 @@ vector<Pelicula> CSVReader::leerArchivo(string nombreArchivo) {
 
     string linea;
 
-    // Saltar encabezado
     getline(archivo, linea);
 
     while (true) {
@@ -191,7 +179,6 @@ vector<Pelicula> CSVReader::leerArchivo(string nombreArchivo) {
 
         vector<string> campos = separarCSV(registro);
 
-        // Patron Factory: la creacion/validacion de la Pelicula vive en PeliculaFactory.
         auto pelicula = PeliculaFactory::crear(
                 static_cast<int>(peliculas.size()), campos);
 

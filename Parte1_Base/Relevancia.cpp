@@ -10,9 +10,6 @@ Relevancia::Relevancia(const vector<Pelicula>& catalogo, const Indexador& indexa
     : catalogo(catalogo), indexador(indexador) {}
 
 string Relevancia::normalizarSimple(const string& texto) const {
-    // Misma idea que CSVReader::normalizarTexto: minusculas y solo
-    // caracteres alfanumericos (el resto se vuelve espacio), para que
-    // coincida con tituloNormalizado / sinopsisNormalizada.
     string resultado;
     for (unsigned char c : texto) {
         if (isalnum(c)) {
@@ -83,9 +80,6 @@ vector<ResultadoBusqueda> Relevancia::buscar(const string& consulta) const {
         return {};
     }
 
-    // El Trie solo procesa la primera palabra de lo que se le pase,
-    // asi que consultamos el indice una vez por cada palabra y unimos
-    // los candidatos.
     unordered_set<int> candidatos;
     for (const string& palabra : palabras) {
         vector<int> parciales = indexador.buscarContenido(palabra);

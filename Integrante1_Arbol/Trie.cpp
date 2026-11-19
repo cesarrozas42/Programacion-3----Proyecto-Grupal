@@ -4,21 +4,16 @@
 #include <cctype>
 #include <iterator>
 
-// ============================================================ NodoTrie
-
 NodoTrie* NodoTrie::hijo(char c) const {
     auto it = hijos.find(c);
     return it == hijos.end() ? nullptr : it->second.get();
 }
-
-// ============================================================ Construccion
 
 Trie::Trie()
     : raizPalabras(make_unique<NodoTrie>()),
       raizSufijos(make_unique<NodoTrie>()) {}
 
 void Trie::limpiar() {
-    // Al reemplazar los unique_ptr, los arboles anteriores se liberan solos.
     raizPalabras = make_unique<NodoTrie>();
     raizSufijos = make_unique<NodoTrie>();
     peliculasPorPalabra.clear();
@@ -35,8 +30,6 @@ NodoTrie* Trie::hijoOCrear(NodoTrie* nodo, char c) {
     return hijo.get();
 }
 
-// Minusculas y solo caracteres alfanumericos; el resto separa palabras.
-// Es la misma regla que usa Relevancia::normalizarSimple.
 vector<string> Trie::normalizar(const string& texto) {
     vector<string> palabras;
     string palabra;
@@ -55,8 +48,6 @@ vector<string> Trie::normalizar(const string& texto) {
     return palabras;
 }
 
-// Mantiene el vector ordenado y sin repetidos. Como el Indexador inserta
-// las peliculas en orden (id 0, 1, 2...), casi siempre es un push_back O(1).
 void Trie::agregarOrdenado(vector<int>& ids, int id) {
     if (ids.empty() || ids.back() < id) {
         ids.push_back(id);
@@ -67,8 +58,6 @@ void Trie::agregarOrdenado(vector<int>& ids, int id) {
         ids.insert(it, id);
     }
 }
-
-// ============================================================ Insercion
 
 void Trie::insertar(const string& texto, int idPelicula) {
     if (idPelicula < 0) {
@@ -82,21 +71,17 @@ void Trie::insertar(const string& texto, int idPelicula) {
 }
 
 void Trie::registrarPalabra(const string& palabra, int idPelicula) {
-    // 1. Bajar por el trie de palabras creando los nodos que falten.
     NodoTrie* actual = raizPalabras.get();
     for (char c : palabra) {
         actual = hijoOCrear(actual, c);
     }
 
-    // 2. Si es la primera vez que aparece la palabra, se le da un id
-    //    y se insertan sus sufijos (solo una vez por palabra distinta).
     if (actual->idPalabra == -1) {
         actual->idPalabra = static_cast<int>(peliculasPorPalabra.size());
         peliculasPorPalabra.emplace_back();
         insertarSufijos(palabra, actual->idPalabra);
     }
 
-    // 3. Registrar la pelicula en el indice invertido de la palabra.
     agregarOrdenado(peliculasPorPalabra[actual->idPalabra], idPelicula);
 }
 
@@ -110,8 +95,6 @@ void Trie::insertarSufijos(const string& palabra, int idPalabra) {
     }
 }
 
-// ============================================================ Busqueda
-
 const NodoTrie* Trie::bajar(const NodoTrie* desde, const string& camino) {
     const NodoTrie* actual = desde;
     for (char c : camino) {
@@ -123,8 +106,6 @@ const NodoTrie* Trie::bajar(const NodoTrie* desde, const string& camino) {
     return actual;
 }
 
-// Recorrido en profundidad (DFS) del trie de palabras: junta los ids
-// de todas las palabras que cuelgan del nodo.
 void Trie::palabrasDelSubarbol(const NodoTrie* nodo, vector<int>& salida) {
     if (nodo->idPalabra != -1) {
         salida.push_back(nodo->idPalabra);
@@ -134,8 +115,6 @@ void Trie::palabrasDelSubarbol(const NodoTrie* nodo, vector<int>& salida) {
     }
 }
 
-// Igual, pero en el trie de sufijos: todo sufijo que cuelga del nodo
-// empieza con la subcadena buscada, asi que su palabra la contiene.
 void Trie::palabrasDelSubarbolSufijos(const NodoTrie* nodo, vector<int>& salida) {
     salida.insert(salida.end(),
                   nodo->palabrasConEsteSufijo.begin(),
@@ -145,8 +124,6 @@ void Trie::palabrasDelSubarbolSufijos(const NodoTrie* nodo, vector<int>& salida)
     }
 }
 
-// Une las peliculas de varias palabras sin repetir. Usa un arreglo de
-// marcas (una por pelicula) en vez de ordenar: O(total de ids).
 vector<int> Trie::unirPeliculas(const vector<int>& idsPalabras) const {
     if (idsPalabras.size() == 1) {
         return peliculasPorPalabra[idsPalabras[0]];
@@ -192,7 +169,6 @@ vector<int> Trie::intersectar(const vector<int>& a, const vector<int>& b) {
     return resultado;
 }
 
-// Aplica la busqueda a cada palabra de la consulta e intersecta.
 template <typename BuscarUnaPalabra>
 vector<int> Trie::buscarTodas(const string& texto, BuscarUnaPalabra buscarUna) const {
     vector<string> palabras = normalizar(texto);
@@ -203,7 +179,7 @@ vector<int> Trie::buscarTodas(const string& texto, BuscarUnaPalabra buscarUna) c
     for (size_t i = 1; i < palabras.size() && !resultado.empty(); ++i) {
         resultado = intersectar(resultado, buscarUna(palabras[i]));
     }
-    return resultado; // ya sale ordenado
+    return resultado;
 }
 
 vector<int> Trie::buscarPrefijo(const string& prefijo) const {
@@ -238,8 +214,6 @@ bool Trie::existePrefijo(const string& prefijo) const {
     return palabras.size() == 1 && bajar(raizPalabras.get(), palabras[0]) != nullptr;
 }
 
-// ============================================================ Autocompletado
-
 void Trie::sugerencias(const NodoTrie* nodo, string& camino,
                        vector<pair<int, string>>& salida) const {
     if (nodo->idPalabra != -1) {
@@ -249,7 +223,7 @@ void Trie::sugerencias(const NodoTrie* nodo, string& camino,
     for (const auto& [c, hijo] : nodo->hijos) {
         camino.push_back(c);
         sugerencias(hijo.get(), camino, salida);
-        camino.pop_back(); // backtracking
+        camino.pop_back();
     }
 }
 
@@ -263,15 +237,15 @@ vector<string> Trie::autocompletar(const string& prefijo, size_t limite) const {
         return {};
     }
 
-    vector<pair<int, string>> candidatas; // (en cuantas peliculas aparece, palabra)
+    vector<pair<int, string>> candidatas;
     string camino = palabras[0];
     sugerencias(nodo, camino, candidatas);
 
     size_t n = min(limite, candidatas.size());
     partial_sort(candidatas.begin(), candidatas.begin() + static_cast<long>(n), candidatas.end(),
                  [](const auto& a, const auto& b) {
-                     if (a.first != b.first) return a.first > b.first; // mas frecuente primero
-                     return a.second < b.second;                       // empate: alfabetico
+                     if (a.first != b.first) return a.first > b.first;
+                     return a.second < b.second;
                  });
 
     vector<string> resultado;
@@ -280,8 +254,6 @@ vector<string> Trie::autocompletar(const string& prefijo, size_t limite) const {
     }
     return resultado;
 }
-
-// ============================================================ Utilidades
 
 size_t Trie::cantidadPalabras() const {
     return peliculasPorPalabra.size();

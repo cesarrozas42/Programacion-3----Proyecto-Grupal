@@ -1,6 +1,4 @@
 #ifdef _WIN32
-// windows.h va primero: los headers del proyecto usan "using namespace std"
-// y si se incluye despues, std::byte choca con el byte de Windows.
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -37,7 +35,6 @@ string localizarCSV(int argc, char* argv[]) {
     return "";
 }
 
-// Consola en UTF-8 y con colores ANSI tambien fuera de CLion (cmd, PowerShell).
 void prepararConsola() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -45,7 +42,7 @@ void prepararConsola() {
     HANDLE salida = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD modo = 0;
     if (salida != INVALID_HANDLE_VALUE && GetConsoleMode(salida, &modo))
-        SetConsoleMode(salida, modo | 0x0004 /* ENABLE_VIRTUAL_TERMINAL_PROCESSING */);
+        SetConsoleMode(salida, modo | 0x0004 );
 #endif
 }
 
@@ -66,15 +63,12 @@ int main(int argc, char* argv[]) {
 
     TiemposCarga tiempos;
 
-    // 1. Leer el CSV (CSVReader crea cada Pelicula con PeliculaFactory: Factory)
     cout << "Cargando catalogo desde: " << rutaCSV << "\n";
     auto inicio = chrono::steady_clock::now();
     CSVReader lector;
     vector<Pelicula> leidas = lector.leerArchivo(rutaCSV);
     tiempos.msLecturaCSV = msDesde(inicio);
 
-    // 2. Guardarlas en el catalogo unico, que construye el indice (Singleton).
-    //    cargarDesdeVector() es tambien el "enchufe" del cargador paralelo.
     cout << "Construyendo indice de busqueda (arbol Trie)...\n";
     inicio = chrono::steady_clock::now();
     CatalogoPeliculas& catalogo = CatalogoPeliculas::getInstancia();
@@ -87,9 +81,6 @@ int main(int argc, char* argv[]) {
     const vector<Pelicula>& peliculas = catalogo.getPeliculas();
     const Indexador& indexador = catalogo.getIndexador();
 
-    // Las busquedas por director, genero y actor ahora pasan por las
-    // estrategias de EstrategiaBusqueda (Strategy); MotorDeBusqueda sigue
-    // disponible para las pruebas de la parte 1.
     Relevancia relevancia(peliculas, indexador);
     Recomendador recomendador(peliculas, indexador);
 

@@ -1,5 +1,3 @@
-// Pruebas del arbol (Trie) e Indexador. Integrante 1 - Parte 2.
-// No necesitan el CSV: usan datos pequenos y controlados.
 #include <cassert>
 #include <functional>
 #include <iostream>
@@ -36,9 +34,6 @@ void prueba(const string& nombre, const function<void()>& cuerpo) {
 
 using Ids = vector<int>;
 
-// Arbol de ejemplo:
-//  0: "The Matrix"            1: "The Matrix Reloaded"
-//  2: "Ghost Ship"            3: "Shipwrecked ghosts"     4: "Casablanca"
 void cargarEjemplo(Trie& t) {
     t.insertar("The Matrix", 0);
     t.insertar("The Matrix Reloaded", 1);
@@ -58,7 +53,7 @@ Pelicula pelicula(const string& titulo, const string& director,
     return p;
 }
 
-} // namespace
+}
 
 int main() {
     cout << "PRUEBAS DEL ARBOL (TRIE)\n\n";

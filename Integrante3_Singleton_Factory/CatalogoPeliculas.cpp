@@ -6,7 +6,6 @@
 using namespace std;
 
 CatalogoPeliculas& CatalogoPeliculas::getInstancia() {
-    // Inicializacion estatica local: thread-safe garantizado desde C++11.
     static CatalogoPeliculas instancia;
     return instancia;
 }
@@ -16,8 +15,6 @@ bool CatalogoPeliculas::instalar(vector<Pelicula>&& nuevas) {
         return false;
     }
 
-    // El Indexador usa la posicion como id, asi que el id de cada pelicula
-    // debe coincidir con su posicion final (aunque el cargador haya descartado filas).
     for (size_t i = 0; i < nuevas.size(); ++i) {
         nuevas[i].setId(static_cast<int>(i));
     }
