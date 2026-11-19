@@ -9,12 +9,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Carpetas del proyecto: una por integrante + la base de la parte 1
 # ------------------------------------------------------------------
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante3_Singleton_Factory
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante4_Strategy_Observer
-    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante5_Interfaz)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante5_Interfaz
+    ${CMAKE_CURRENT_SOURCE_DIR}/Parte1_Base)
 
 # ------------------------------------------------------------------
 # Nucleo compartido por todos los ejecutables
@@ -25,13 +25,13 @@ set(FUENTES_NUCLEO
     Integrante3_Singleton_Factory/CatalogoPeliculas.cpp  # Integrante 3 (Parte 2): Singleton
     Integrante3_Singleton_Factory/PeliculaFactory.cpp    # Integrante 3 (Parte 2): Factory
     Integrante4_Strategy_Observer/EstrategiaBusqueda.cpp # Integrante 4 (Parte 2): Strategy (arbol / secuencial / paralela)
-    CSVReader.cpp
-    Motor_de_busqueda.cpp
-    Pelicula.cpp
-    Recomendador.cpp
-    Relevancia.cpp
-    Tag.cpp
-    Usuario.cpp)
+    Parte1_Base/CSVReader.cpp
+    Parte1_Base/Motor_de_busqueda.cpp
+    Parte1_Base/Pelicula.cpp
+    Parte1_Base/Recomendador.cpp
+    Parte1_Base/Relevancia.cpp
+    Parte1_Base/Tag.cpp
+    Parte1_Base/Usuario.cpp)
 
 add_library(streaming_core ${FUENTES_NUCLEO})
 
@@ -57,7 +57,7 @@ target_link_libraries(plataforma_streaming PRIVATE streaming_core)
 # ------------------------------------------------------------------
 enable_testing()
 
-add_executable(tests_proyecto test_relevancia_recomendador.cpp test_motor.cpp)
+add_executable(tests_proyecto Parte1_Base/test_relevancia_recomendador.cpp Parte1_Base/test_motor.cpp)
 target_link_libraries(tests_proyecto PRIVATE streaming_core)
 add_test(NAME pruebas_del_proyecto COMMAND tests_proyecto)
 
@@ -80,10 +80,10 @@ add_test(NAME pruebas_de_patrones COMMAND test_patrones)
 # --- AGREGAMOS EL BENCHMARK AQUI ---
 add_executable(benchmark
         Integrante2_Paralelismo/benchmark.cpp
-        CSVReader.cpp
+        Parte1_Base/CSVReader.cpp
         Integrante1_Arbol/Indexador.cpp
-        Pelicula.cpp
-        Tag.cpp
+        Parte1_Base/Pelicula.cpp
+        Parte1_Base/Tag.cpp
         Integrante1_Arbol/Trie.cpp
         Integrante3_Singleton_Factory/PeliculaFactory.cpp
         Integrante2_Paralelismo/ParallelEngine.cpp)
