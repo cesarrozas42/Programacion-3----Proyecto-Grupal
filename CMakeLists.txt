@@ -12,7 +12,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo
-    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante3_Singleton_Factory)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante3_Singleton_Factory
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante4_Strategy_Observer)
 
 # ------------------------------------------------------------------
 # Nucleo compartido por todos los ejecutables
@@ -22,7 +23,7 @@ set(FUENTES_NUCLEO
     Integrante1_Arbol/Indexador.cpp          # Integrante 1 (Parte 2): un arbol por tipo de tag
     Integrante3_Singleton_Factory/CatalogoPeliculas.cpp  # Integrante 3 (Parte 2): Singleton
     Integrante3_Singleton_Factory/PeliculaFactory.cpp    # Integrante 3 (Parte 2): Factory
-    EstrategiaBusqueda.cpp # Integrante 4 (Parte 2): Strategy (arbol / secuencial / paralela)
+    Integrante4_Strategy_Observer/EstrategiaBusqueda.cpp # Integrante 4 (Parte 2): Strategy (arbol / secuencial / paralela)
     CSVReader.cpp
     Motor_de_busqueda.cpp
     Pelicula.cpp
