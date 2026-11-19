@@ -10,7 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ------------------------------------------------------------------
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo)
 
 # ------------------------------------------------------------------
 # Nucleo compartido por todos los ejecutables
@@ -75,13 +76,13 @@ add_test(NAME pruebas_de_patrones COMMAND test_patrones)
 # FUENTES_NUCLEO; los hilos ya estan enlazados arriba y el catalogo
 # --- AGREGAMOS EL BENCHMARK AQUI ---
 add_executable(benchmark
-        benchmark.cpp
+        Integrante2_Paralelismo/benchmark.cpp
         CSVReader.cpp
         Integrante1_Arbol/Indexador.cpp
         Pelicula.cpp
         Tag.cpp
         Integrante1_Arbol/Trie.cpp
         PeliculaFactory.cpp
-        ParallelEngine.cpp)
+        Integrante2_Paralelismo/ParallelEngine.cpp)
 target_link_libraries(benchmark Threads::Threads)
 # ------------------------------------------------------------------
