@@ -13,7 +13,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante3_Singleton_Factory
-    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante4_Strategy_Observer)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante4_Strategy_Observer
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante5_Interfaz)
 
 # ------------------------------------------------------------------
 # Nucleo compartido por todos los ejecutables
@@ -48,7 +49,7 @@ endif()
 # Programa principal: menu de CineSearch (Integrante 5 - interfaz)
 # En CLion: elegir "plataforma_streaming" y darle Run.
 # ------------------------------------------------------------------
-add_executable(plataforma_streaming main.cpp InterfazCLI.cpp)
+add_executable(plataforma_streaming Integrante5_Interfaz/main.cpp Integrante5_Interfaz/InterfazCLI.cpp)
 target_link_libraries(plataforma_streaming PRIVATE streaming_core)
 
 # ------------------------------------------------------------------
