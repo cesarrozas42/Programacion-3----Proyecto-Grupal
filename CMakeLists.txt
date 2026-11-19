@@ -22,6 +22,7 @@ include_directories(
 set(FUENTES_NUCLEO
     Integrante1_Arbol/Trie.cpp               # Integrante 1 (Parte 2): trie de palabras + trie de sufijos
     Integrante1_Arbol/Indexador.cpp          # Integrante 1 (Parte 2): un arbol por tipo de tag
+    Integrante2_Paralelismo/ParallelEngine.cpp # Integrante 2 (Parte 2): carga paralela del CSV
     Integrante3_Singleton_Factory/CatalogoPeliculas.cpp  # Integrante 3 (Parte 2): Singleton
     Integrante3_Singleton_Factory/PeliculaFactory.cpp    # Integrante 3 (Parte 2): Factory
     Integrante4_Strategy_Observer/EstrategiaBusqueda.cpp # Integrante 4 (Parte 2): Strategy (arbol / secuencial / paralela)
@@ -75,17 +76,7 @@ target_link_libraries(test_patrones PRIVATE streaming_core)
 add_test(NAME pruebas_de_patrones COMMAND test_patrones)
 
 # ------------------------------------------------------------------
-# Falta: Integrante 2 (carga paralela del CSV). Sumar sus .cpp a
-# FUENTES_NUCLEO; los hilos ya estan enlazados arriba y el catalogo
-# --- AGREGAMOS EL BENCHMARK AQUI ---
-add_executable(benchmark
-        Integrante2_Paralelismo/benchmark.cpp
-        Parte1_Base/CSVReader.cpp
-        Integrante1_Arbol/Indexador.cpp
-        Parte1_Base/Pelicula.cpp
-        Parte1_Base/Tag.cpp
-        Integrante1_Arbol/Trie.cpp
-        Integrante3_Singleton_Factory/PeliculaFactory.cpp
-        Integrante2_Paralelismo/ParallelEngine.cpp)
-target_link_libraries(benchmark Threads::Threads)
+# Paralelismo (Integrante 2 - Parte 2): secuencial vs 1, 2, 3, 4 y 8 hilos
 # ------------------------------------------------------------------
+add_executable(benchmark Integrante2_Paralelismo/benchmark.cpp)
+target_link_libraries(benchmark PRIVATE streaming_core)

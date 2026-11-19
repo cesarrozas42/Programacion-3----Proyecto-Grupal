@@ -6,13 +6,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <chrono>
 #include <algorithm>
-
-#include <future>
-
-using namespace std;
-using namespace std::chrono; // <-- AGREGAR ESTO
 
 using namespace std;
 
@@ -56,6 +50,8 @@ vector<Pelicula> ParallelEngine::cargarCSVParalelo(const string& rutaCSV, int nu
     string contenido((istreambuf_iterator<char>(archivo)), istreambuf_iterator<char>());
     archivo.close();
 
+    contenido.erase(remove(contenido.begin(), contenido.end(), '\r'), contenido.end());
+
     if (contenido.empty()) return {};
 
     vector<size_t> iniciosFilas;
@@ -94,7 +90,7 @@ vector<Pelicula> ParallelEngine::cargarCSVParalelo(const string& rutaCSV, int nu
     size_t filaActual = 1;
 
     for (int i = 0; i < numHilos; ++i) {
-        size_t misFilas = filasPorHilo + (i < sobrantes ? 1 : 0);
+        size_t misFilas = filasPorHilo + (static_cast<size_t>(i) < sobrantes ? 1 : 0);
         size_t inicioIdx = filaActual;
         size_t finIdx = filaActual + misFilas;
         filaActual = finIdx;
@@ -144,70 +140,8 @@ vector<Pelicula> ParallelEngine::cargarCSVParalelo(const string& rutaCSV, int nu
 }
 
 // CONSTRUCCIÓN PARALELA DEL ÍNDICE
-std::unique_ptr<Indexador> ParallelEngine::construirIndiceParalelo(const vector<Pelicula>& peliculas, int numHilos) {
+std::unique_ptr<Indexador> ParallelEngine::construirIndiceParalelo(const vector<Pelicula>& peliculas, [[maybe_unused]] int numHilos) {
     auto idx = std::make_unique<Indexador>();
     idx->construirIndice(peliculas);
     return idx;
-}
-
-// BENCHMARK
-
-void ParallelEngine::ejecutarBenchmark(const string& rutaCSV) {
-    cout << "=== BENCHMARK DE RENDIMIENTO ===" << endl;
-    cout << "Hilos\tCarga CSV (ms)\tIndice Sec (ms)\tTotal" << endl;
-    cout << "--------------------------------------------------------" << endl;
-
-    // --- 1. FLUJO SECUENCIAL ---
-    auto inicio = high_resolution_clock::now();
-    CSVReader reader;
-    vector<Pelicula> pelisSec = reader.leerArchivo(rutaCSV);
-    auto finCargaSec = high_resolution_clock::now();
-    double msCargaSec = duration<double, milli>(finCargaSec - inicio).count();
-
-    inicio = high_resolution_clock::now();
-    Indexador idxSec;
-    idxSec.construirIndice(pelisSec);
-    auto fin = high_resolution_clock::now();
-    double msIndiceSec = duration<double, milli>(fin - inicio).count();
-
-    cout << "Secuencial\t" << msCargaSec << "\t\t" << msIndiceSec << "\t\t" << (msCargaSec + msIndiceSec) << endl;
-
-    // --- 2. FLUJO PARALELO (Solo Carga) ---
-    for (int hilos : {1, 2, 4, 8}) {
-        inicio = high_resolution_clock::now();
-        vector<Pelicula> pelisPar = ParallelEngine::cargarCSVParalelo(rutaCSV, hilos);
-        fin = high_resolution_clock::now();
-        double msCargaPar = duration<double, milli>(fin - inicio).count();
-
-        cout << hilos << " hilo(s)\t" << msCargaPar << "\t\t";
-        if (pelisPar.size() != pelisSec.size()) cout << "[ERROR]";
-        else cout << "N/A\t\t" << "N/A" << endl;
-    }
-
-    // --- 3. BÚSQUEDA EN PARALELO ---
-    cout << "\n=== BENCHMARK DE BUSQUEDA EN PARALELO ===\n";
-    vector<string> consultas = {"matrix", "ghost", "ship", "action", "drama", "love", "war", "star"};
-
-    inicio = high_resolution_clock::now();
-    for (const string& q : consultas) {
-        idxSec.buscarContenido(q);
-    }
-    fin = high_resolution_clock::now();
-    double msBusqSec = duration<double, milli>(fin - inicio).count();
-    cout << "Secuencial: " << msBusqSec << " ms para " << consultas.size() << " busquedas.\n";
-
-    inicio = high_resolution_clock::now();
-    vector<future<vector<int>>> tareas;
-    for (const string& q : consultas) {
-        tareas.push_back(std::async(std::launch::async, [&idxSec, q]() {
-            return idxSec.buscarContenido(q);
-        }));
-    }
-    for (auto& t : tareas) {
-        t.get();
-    }
-    fin = high_resolution_clock::now();
-    double msBusqPar = duration<double, milli>(fin - inicio).count();
-    cout << "Paralela (std::async): " << msBusqPar << " ms para " << consultas.size() << " busquedas.\n";
-    cout << "Mejora en busqueda: " << (msBusqSec / msBusqPar) << "x veces mas rapido.\n";
 }

@@ -13,8 +13,6 @@ public:
 
     // CAMBIO AQUI: ahora devuelve un puntero inteligente
     static std::unique_ptr<Indexador> construirIndiceParalelo(const std::vector<Pelicula>& peliculas, int numHilos);
-
-    static void ejecutarBenchmark(const std::string& rutaCSV);
 };
 
 #endif //PROYECTO_BUSCADOR_PELICULAS_PARALLELENGINE_H
