@@ -14,7 +14,7 @@ vector<string> CSVReader::separarCSV(string linea) {
     string campo;
     bool dentroComillas = false;
 
-    for (int i = 0; i < linea.size(); i++) {
+    for (size_t i = 0; i < linea.size(); i++) {
 
         char c = linea[i];
 
@@ -50,25 +50,20 @@ vector<string> CSVReader::separarCSV(string linea) {
 
 string CSVReader::limpiarTexto(string texto) {
 
-    int inicio = 0;
+    size_t inicio = 0;
 
     while (inicio < texto.size() &&
            isspace(static_cast<unsigned char>(texto[inicio]))) {
         inicio++;
     }
 
-    int fin = texto.size() - 1;
+    size_t fin = texto.size();
 
-    while (fin >= inicio &&
-           isspace(static_cast<unsigned char>(texto[fin]))) {
+    while (fin > inicio &&
+           isspace(static_cast<unsigned char>(texto[fin - 1]))) {
         fin--;
     }
-
-    if (inicio > fin) {
-        return "";
-    }
-
-    return texto.substr(inicio, fin - inicio + 1);
+    return texto.substr(inicio, fin - inicio);
 }
 
 string reemplazarTodos(string texto, string buscar, string reemplazo) {
@@ -145,7 +140,7 @@ string CSVReader::leerRegistroCSV(ifstream &archivo) {
     bool dentroComillas = false;
     while (getline(archivo, linea)){
         registro += linea;
-        for (int i = 0; i < linea.size(); i++){
+        for (size_t i = 0; i < linea.size(); i++){
             if (linea[i] == '"'){
                 // Si encontramos dos comillas seguidas,
                 // representan una comilla dentro del texto.
