@@ -30,7 +30,6 @@ int main() {
     double msIndiceSec = duration<double, milli>(fin - inicio).count();
 
     cout << "Secuencial\t" << msCargaSec << "\t\t" << msIndiceSec << "\t\t" << (msCargaSec + msIndiceSec) << endl;
-
     // 2. FLUJO PARALELO (Solo Carga)
     for (int hilos : {1, 2, 4, 8}) {
         inicio = high_resolution_clock::now();

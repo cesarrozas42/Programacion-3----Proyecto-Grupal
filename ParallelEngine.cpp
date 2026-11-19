@@ -8,7 +8,7 @@
 #include <vector>
 #include <chrono>
 #include <algorithm>
-
+#include <iomanip>
 #include <future>
 
 using namespace std;
@@ -153,9 +153,13 @@ std::unique_ptr<Indexador> ParallelEngine::construirIndiceParalelo(const vector<
 // BENCHMARK
 
 void ParallelEngine::ejecutarBenchmark(const string& rutaCSV) {
-    cout << "=== BENCHMARK DE RENDIMIENTO ===" << endl;
-    cout << "Hilos\tCarga CSV (ms)\tIndice Sec (ms)\tTotal" << endl;
-    cout << "--------------------------------------------------------" << endl;
+    // --- CONFIGURACIÓN DE LA TABLA ---
+    cout << "\n=== BENCHMARK DE RENDIMIENTO ===" << endl;
+    cout << left << setw(15) << "Hilos"
+         << right << setw(15) << "Carga CSV (ms)"
+         << right << setw(15) << "Indice (ms)"
+         << right << setw(15) << "Total (ms)" << endl;
+    cout << string(60, '-') << endl;
 
     // --- 1. FLUJO SECUENCIAL ---
     auto inicio = high_resolution_clock::now();
@@ -170,7 +174,10 @@ void ParallelEngine::ejecutarBenchmark(const string& rutaCSV) {
     auto fin = high_resolution_clock::now();
     double msIndiceSec = duration<double, milli>(fin - inicio).count();
 
-    cout << "Secuencial\t" << msCargaSec << "\t\t" << msIndiceSec << "\t\t" << (msCargaSec + msIndiceSec) << endl;
+    cout << left << setw(15) << "Secuencial"
+         << right << setw(15) << fixed << setprecision(2) << msCargaSec
+         << right << setw(15) << msIndiceSec
+         << right << setw(15) << (msCargaSec + msIndiceSec) << endl;
 
     // --- 2. FLUJO PARALELO (Solo Carga) ---
     for (int hilos : {1, 2, 4, 8}) {
@@ -179,24 +186,30 @@ void ParallelEngine::ejecutarBenchmark(const string& rutaCSV) {
         fin = high_resolution_clock::now();
         double msCargaPar = duration<double, milli>(fin - inicio).count();
 
-        cout << hilos << " hilo(s)\t" << msCargaPar << "\t\t";
-        if (pelisPar.size() != pelisSec.size()) cout << "[ERROR]";
-        else cout << "N/A\t\t" << "N/A" << endl;
+        cout << left << setw(15) << (to_string(hilos) + " hilo(s)")
+             << right << setw(15) << fixed << setprecision(2) << msCargaPar
+             << right << setw(15) << "N/A"
+             << right << setw(15) << "N/A" << endl;
     }
 
     // --- 3. BÚSQUEDA EN PARALELO ---
-    cout << "\n=== BENCHMARK DE BUSQUEDA EN PARALELO ===\n";
+    cout << "\n=== BENCHMARK DE BUSQUEDA EN PARALELO ===" << endl;
+    cout << left << setw(20) << "Tipo de Busqueda"
+         << right << setw(15) << "Tiempo (ms)" << endl;
+    cout << string(40, '-') << endl;
+
     vector<string> consultas = {"matrix", "ghost", "ship", "action", "drama", "love", "war", "star"};
 
-    inicio = high_resolution_clock::now();
+    // Secuencial
+    auto inicioBusq = high_resolution_clock::now();
     for (const string& q : consultas) {
         idxSec.buscarContenido(q);
     }
-    fin = high_resolution_clock::now();
-    double msBusqSec = duration<double, milli>(fin - inicio).count();
-    cout << "Secuencial: " << msBusqSec << " ms para " << consultas.size() << " busquedas.\n";
+    auto finBusq = high_resolution_clock::now();
+    double msBusqSec = duration<double, milli>(finBusq - inicioBusq).count();
 
-    inicio = high_resolution_clock::now();
+    // Paralela
+    inicioBusq = high_resolution_clock::now();
     vector<future<vector<int>>> tareas;
     for (const string& q : consultas) {
         tareas.push_back(std::async(std::launch::async, [&idxSec, q]() {
@@ -206,8 +219,15 @@ void ParallelEngine::ejecutarBenchmark(const string& rutaCSV) {
     for (auto& t : tareas) {
         t.get();
     }
-    fin = high_resolution_clock::now();
-    double msBusqPar = duration<double, milli>(fin - inicio).count();
-    cout << "Paralela (std::async): " << msBusqPar << " ms para " << consultas.size() << " busquedas.\n";
+    finBusq = high_resolution_clock::now();
+    double msBusqPar = duration<double, milli>(finBusq - inicioBusq).count();
+
+    // Imprimir resultados de búsqueda
+    cout << left << setw(20) << "Secuencial"
+         << right << setw(15) << fixed << setprecision(4) << msBusqSec << endl;
+    cout << left << setw(20) << "Paralela (async)"
+         << right << setw(15) << fixed << setprecision(4) << msBusqPar << endl;
+
+    cout << string(40, '-') << endl;
     cout << "Mejora en busqueda: " << (msBusqSec / msBusqPar) << "x veces mas rapido.\n";
 }
