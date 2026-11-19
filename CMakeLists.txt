@@ -11,7 +11,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Integrante1_Arbol
-    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante2_Paralelismo
+    ${CMAKE_CURRENT_SOURCE_DIR}/Integrante3_Singleton_Factory)
 
 # ------------------------------------------------------------------
 # Nucleo compartido por todos los ejecutables
@@ -19,8 +20,8 @@ include_directories(
 set(FUENTES_NUCLEO
     Integrante1_Arbol/Trie.cpp               # Integrante 1 (Parte 2): trie de palabras + trie de sufijos
     Integrante1_Arbol/Indexador.cpp          # Integrante 1 (Parte 2): un arbol por tipo de tag
-    CatalogoPeliculas.cpp  # Integrante 3 (Parte 2): Singleton
-    PeliculaFactory.cpp    # Integrante 3 (Parte 2): Factory
+    Integrante3_Singleton_Factory/CatalogoPeliculas.cpp  # Integrante 3 (Parte 2): Singleton
+    Integrante3_Singleton_Factory/PeliculaFactory.cpp    # Integrante 3 (Parte 2): Factory
     EstrategiaBusqueda.cpp # Integrante 4 (Parte 2): Strategy (arbol / secuencial / paralela)
     CSVReader.cpp
     Motor_de_busqueda.cpp
@@ -67,7 +68,7 @@ add_executable(demo_arbol Integrante1_Arbol/demo_arbol.cpp)
 target_link_libraries(demo_arbol PRIVATE streaming_core)
 
 # Patrones A (Integrante 3 - Parte 2): Singleton + Factory
-add_executable(test_patrones test_patrones.cpp)
+add_executable(test_patrones Integrante3_Singleton_Factory/test_patrones.cpp)
 target_link_libraries(test_patrones PRIVATE streaming_core)
 add_test(NAME pruebas_de_patrones COMMAND test_patrones)
 
@@ -82,7 +83,7 @@ add_executable(benchmark
         Pelicula.cpp
         Tag.cpp
         Integrante1_Arbol/Trie.cpp
-        PeliculaFactory.cpp
+        Integrante3_Singleton_Factory/PeliculaFactory.cpp
         Integrante2_Paralelismo/ParallelEngine.cpp)
 target_link_libraries(benchmark Threads::Threads)
 # ------------------------------------------------------------------
